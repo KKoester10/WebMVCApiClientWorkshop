@@ -109,7 +109,7 @@ namespace WebMVCApiClientWorkshop.Controllers
             return View(party);
         }
 
-        // POST: VideoGame/Delete/5
+        // POST: Parties/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

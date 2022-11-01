@@ -31,7 +31,7 @@ namespace WebMVCApiClientWorkshop.Services
 
             var response = await responseGet.ReadContentAsync<Party>();
 
-            var party = new Party(response.Id, response.Name, response.Characters);
+            var party = new Party(response.Id, response.Name);
 
             return party;
         }

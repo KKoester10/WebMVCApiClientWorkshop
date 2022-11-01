@@ -7,7 +7,7 @@
         public int Amount { get; set; }
 
 
-        public CharacterInventory(int id, string? itemName, int amount)
+        public CharacterInventory(int? id, string? itemName, int amount)
         {
             Id = id;
             ItemName = itemName;

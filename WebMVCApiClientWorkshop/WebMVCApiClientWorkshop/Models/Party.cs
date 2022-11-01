@@ -6,11 +6,11 @@
         public string? Name { get; set; }
         public virtual List<Character>? Characters { get; set; }
 
-        public Party(int id, string name,List<Character> characters)
+        public Party(int? id, string name)
         {
             Id = id;
             Name = name;
-            Characters = characters;
+            
         }
 
         public Party()

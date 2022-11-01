@@ -7,34 +7,43 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DnDCharacter.Models;
 using WebMVCApiClientWorkshop.Data;
+using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
+using WebMVCApiClientWorkshop.Services.Interfaces;
 
 namespace WebMVCApiClientWorkshop.Controllers
 {
     public class CharacterInventoriesController : Controller
     {
-        private readonly WebMVCApiClientWorkshopContext _context;
+        private ICharacterInventoryService? _service;
 
-        public CharacterInventoriesController(WebMVCApiClientWorkshopContext context)
+        private static readonly HttpClient client = new HttpClient();
+
+        private string requestUri = "https://localhost:7190/api/CharacterInventories/";
+
+        public CharacterInventoriesController(ICharacterInventoryService service)
         {
-            _context = context;
+            _service = service ?? throw new ArgumentNullException(nameof(service));
+
+            client.DefaultRequestHeaders.Accept.Clear();
+
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            client.DefaultRequestHeaders.Add("User-Agent", "Kolton's API");
         }
 
-        // GET: CharacterInventories
         public async Task<IActionResult> Index()
         {
-              return View(await _context.CharacterInventory.ToListAsync());
+            var response = await _service.FindAll();
+
+            return View(response);
         }
 
         // GET: CharacterInventories/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null || _context.CharacterInventory == null)
-            {
-                return NotFound();
-            }
-
-            var characterInventory = await _context.CharacterInventory
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var characterInventory = await _service.FindOne(id);
             if (characterInventory == null)
             {
                 return NotFound();
@@ -44,46 +53,35 @@ namespace WebMVCApiClientWorkshop.Controllers
         }
 
         // GET: CharacterInventories/Create
-        public IActionResult Create()
+        public ActionResult Create()
         {
             return View();
         }
 
         // POST: CharacterInventories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ItemName,Amount")] CharacterInventory characterInventory)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(characterInventory);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(characterInventory);
+            characterInventory.Id = null;
+            var resultPost = await client.PostAsync<CharacterInventory>(requestUri, characterInventory, new JsonMediaTypeFormatter());
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: CharacterInventories/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null || _context.CharacterInventory == null)
-            {
-                return NotFound();
-            }
-
-            var characterInventory = await _context.CharacterInventory.FindAsync(id);
+            var characterInventory = await _service.FindOne(id);
             if (characterInventory == null)
             {
                 return NotFound();
             }
+
             return View(characterInventory);
         }
 
         // POST: CharacterInventories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ItemName,Amount")] CharacterInventory characterInventory)
@@ -93,39 +91,15 @@ namespace WebMVCApiClientWorkshop.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(characterInventory);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CharacterInventoryExists(characterInventory.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(characterInventory);
+            var resultPut = await client.PutAsync<CharacterInventory>(requestUri + characterInventory.Id.ToString(), characterInventory, new JsonMediaTypeFormatter());
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: CharacterInventories/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.CharacterInventory == null)
-            {
-                return NotFound();
-            }
+        public async Task<IActionResult> Delete(int id)
 
-            var characterInventory = await _context.CharacterInventory
-                .FirstOrDefaultAsync(m => m.Id == id);
+        {
+            var characterInventory = await _service.FindOne(id);
             if (characterInventory == null)
             {
                 return NotFound();
@@ -134,28 +108,13 @@ namespace WebMVCApiClientWorkshop.Controllers
             return View(characterInventory);
         }
 
-        // POST: CharacterInventories/Delete/5
+        // POST: VideoGame/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.CharacterInventory == null)
-            {
-                return Problem("Entity set 'WebMVCApiClientWorkshopContext.CharacterInventory'  is null.");
-            }
-            var characterInventory = await _context.CharacterInventory.FindAsync(id);
-            if (characterInventory != null)
-            {
-                _context.CharacterInventory.Remove(characterInventory);
-            }
-            
-            await _context.SaveChangesAsync();
+            var resultDelete = await client.DeleteAsync(requestUri + id.ToString());
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool CharacterInventoryExists(int id)
-        {
-          return _context.CharacterInventory.Any(e => e.Id == id);
         }
     }
 }

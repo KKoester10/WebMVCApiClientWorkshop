@@ -10,7 +10,7 @@
         public int Wisdom { get; set; }
         public int Charisma { get; set; }
 
-        public Abilities(int id, int strength, int dexterity, int constitution, int intelligence, int wisdom, int charisma)
+        public Abilities(int? id, int strength, int dexterity, int constitution, int intelligence, int wisdom, int charisma)
         {
             Id = id;
             Strength = strength;

@@ -29,7 +29,23 @@ namespace WebMVCApiClientWorkshop.Services
             var responseGet = await _client.GetAsync(request);
 
             var response = await responseGet.ReadContentAsync<Character>();
-
+           /* var abilities = new Abilities
+            {
+                Id = id,
+                Strength = response.Abilities.Strength,
+                Dexterity = response.Abilities.Dexterity,
+                Constitution = response.Abilities.Constitution,
+                Charisma = response.Abilities.Charisma,
+                Intelligence = response.Abilities.Intelligence,
+                Wisdom = response.Abilities.Wisdom
+            };
+            var inventory = new CharacterInventory
+            {
+                Id = id,
+                ItemName = response.Inventory.ItemName,
+                Amount = response.Inventory.Amount
+            };*/
+            var party = new Party { Name = response.Party.Name };
             var character = new Character(
                 response.Id,
                 response.PlayerName,
@@ -45,11 +61,12 @@ namespace WebMVCApiClientWorkshop.Services
                 response.HitPoints,
                 response.Speed,
                 response.PartyId,
-                response.Party,
+                party,
                 response.AbilitiesId,
                 response.Abilities,
                 response.InventoryId,
-                response.Inventory);
+                response.Inventory
+                );
 
             return character;
         }

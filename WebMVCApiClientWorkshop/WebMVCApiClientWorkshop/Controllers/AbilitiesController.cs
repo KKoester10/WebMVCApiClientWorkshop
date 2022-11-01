@@ -7,34 +7,43 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DnDCharacter.Models;
 using WebMVCApiClientWorkshop.Data;
+using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
+using WebMVCApiClientWorkshop.Services.Interfaces;
 
 namespace WebMVCApiClientWorkshop.Controllers
 {
     public class AbilitiesController : Controller
     {
-        private readonly WebMVCApiClientWorkshopContext _context;
+     
+        private IAbilitiesService? _service;
 
-        public AbilitiesController(WebMVCApiClientWorkshopContext context)
+        private static readonly HttpClient client = new HttpClient();
+
+        private string requestUri = "https://localhost:7190/api/Abilities/";
+
+        public AbilitiesController(IAbilitiesService service)
         {
-            _context = context;
-        }
+            _service = service ?? throw new ArgumentNullException(nameof(service));
 
-        // GET: Abilities
+            client.DefaultRequestHeaders.Accept.Clear();
+
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            client.DefaultRequestHeaders.Add("User-Agent", "Kolton's API");
+        }
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Abilities.ToListAsync());
+            var response = await _service.FindAll();
+
+            return View(response);
         }
 
-        // GET: Abilities/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Abilites/Details/5
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null || _context.Abilities == null)
-            {
-                return NotFound();
-            }
-
-            var abilities = await _context.Abilities
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var abilities = await _service.FindOne(id);
             if (abilities == null)
             {
                 return NotFound();
@@ -44,46 +53,35 @@ namespace WebMVCApiClientWorkshop.Controllers
         }
 
         // GET: Abilities/Create
-        public IActionResult Create()
+        public ActionResult Create()
         {
             return View();
         }
 
         // POST: Abilities/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Strength,Dexterity,Constitution,Intelligence,Wisdom,Charisma")] Abilities abilities)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(abilities);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(abilities);
+            abilities.Id = null;
+            var resultPost = await client.PostAsync<Abilities>(requestUri, abilities, new JsonMediaTypeFormatter());
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Abilities/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Abilites/Edit/5
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null || _context.Abilities == null)
-            {
-                return NotFound();
-            }
-
-            var abilities = await _context.Abilities.FindAsync(id);
+            var abilities = await _service.FindOne(id);
             if (abilities == null)
             {
                 return NotFound();
             }
+
             return View(abilities);
         }
 
-        // POST: Abilities/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Abilites/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Strength,Dexterity,Constitution,Intelligence,Wisdom,Charisma")] Abilities abilities)
@@ -93,39 +91,15 @@ namespace WebMVCApiClientWorkshop.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(abilities);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AbilitiesExists(abilities.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(abilities);
+            var resultPut = await client.PutAsync<Abilities>(requestUri + abilities.Id.ToString(), abilities, new JsonMediaTypeFormatter());
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Abilities/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Abilities == null)
-            {
-                return NotFound();
-            }
+        // GET: Abilites/Delete/5
+        public async Task<IActionResult> Delete(int id)
 
-            var abilities = await _context.Abilities
-                .FirstOrDefaultAsync(m => m.Id == id);
+        {
+            var abilities = await _service.FindOne(id);
             if (abilities == null)
             {
                 return NotFound();
@@ -134,28 +108,13 @@ namespace WebMVCApiClientWorkshop.Controllers
             return View(abilities);
         }
 
-        // POST: Abilities/Delete/5
+        // POST: VideoGame/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Abilities == null)
-            {
-                return Problem("Entity set 'WebMVCApiClientWorkshopContext.Abilities'  is null.");
-            }
-            var abilities = await _context.Abilities.FindAsync(id);
-            if (abilities != null)
-            {
-                _context.Abilities.Remove(abilities);
-            }
-            
-            await _context.SaveChangesAsync();
+            var resultDelete = await client.DeleteAsync(requestUri + id.ToString());
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool AbilitiesExists(int id)
-        {
-          return _context.Abilities.Any(e => e.Id == id);
         }
     }
 }

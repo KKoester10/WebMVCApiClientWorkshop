@@ -28,7 +28,7 @@
             return;
         }
 
-        public Character(int id, string? playerName, string? @class, int level, string? race, string? allignment, string? background, int proficiencyBonus, int experiance, int armorClass, int initiative, int hitPoints, int speed, int? partyId, Party? party, int? abilitiesId, Abilities? abilities, int? inventoryId, CharacterInventory? inventory)
+        public Character(int? id, string? playerName, string? @class, int level, string? race, string? allignment, string? background, int proficiencyBonus, int experiance, int armorClass, int initiative, int hitPoints, int speed, int? partyId, Party? party, int? abilitiesId, Abilities? abilities, int? inventoryId, CharacterInventory? inventory)
         {
             Id = id;
             PlayerName = playerName;
