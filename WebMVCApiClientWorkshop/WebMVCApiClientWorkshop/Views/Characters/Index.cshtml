@@ -1,0 +1,125 @@
+﻿@model IEnumerable<DnDCharacter.Models.Character>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Class)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Level)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Race)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Allignment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Background)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProficiencyBonus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Experiance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ArmorClass)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Initiative)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HitPoints)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Speed)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Party)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Abilities)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Class)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Level)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Race)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Allignment)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Background)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProficiencyBonus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Experiance)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ArmorClass)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Initiative)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HitPoints)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Speed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Party.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Abilities.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Inventory.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
