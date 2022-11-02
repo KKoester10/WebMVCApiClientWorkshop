@@ -29,22 +29,22 @@ namespace WebMVCApiClientWorkshop.Services
             var responseGet = await _client.GetAsync(request);
 
             var response = await responseGet.ReadContentAsync<Character>();
-           /* var abilities = new Abilities
+            var abilities = new Abilities
             {
                 Id = id,
-                Strength = response.Abilities.Strength,
-                Dexterity = response.Abilities.Dexterity,
-                Constitution = response.Abilities.Constitution,
-                Charisma = response.Abilities.Charisma,
-                Intelligence = response.Abilities.Intelligence,
-                Wisdom = response.Abilities.Wisdom
+                Strength = 0,
+                Dexterity = 0,
+                Constitution = 0,
+                Charisma = 0,
+                Intelligence = 0,
+                Wisdom = 0
             };
             var inventory = new CharacterInventory
             {
                 Id = id,
-                ItemName = response.Inventory.ItemName,
-                Amount = response.Inventory.Amount
-            };*/
+                ItemName = "things",
+                Amount = 0
+            };
             var party = new Party { Name = response.Party.Name };
             var character = new Character(
                 response.Id,
@@ -63,9 +63,9 @@ namespace WebMVCApiClientWorkshop.Services
                 response.PartyId,
                 party,
                 response.AbilitiesId,
-                response.Abilities,
+                abilities,
                 response.InventoryId,
-                response.Inventory
+                inventory
                 );
 
             return character;

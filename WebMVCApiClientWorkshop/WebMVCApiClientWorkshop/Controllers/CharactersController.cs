@@ -15,7 +15,6 @@ namespace WebMVCApiClientWorkshop.Controllers
 {
     public class CharactersController : Controller
     {
-        private IAbilitiesService _serviceAbilities;
         private ICharacterService? _service;
         private IPartyService? _serviceParty;
 
@@ -59,8 +58,8 @@ namespace WebMVCApiClientWorkshop.Controllers
         public async Task<IActionResult> Create()
         {
             var response = await _serviceParty.FindAll();
-            ViewData["AbilitiesId"] = new SelectList(response, "Id", "Id");
-            ViewData["InventoryId"] = new SelectList(response, "Id", "Id");
+            /*ViewData["AbilitiesId"] = new SelectList(response, "Id", "Id");
+            ViewData["InventoryId"] = new SelectList(response, "Id", "Id");*/
             ViewData["PartyId"] = new SelectList(response, "Id", "Id");
             return View();
         }
@@ -80,8 +79,8 @@ namespace WebMVCApiClientWorkshop.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var response = await _serviceParty.FindAll();
-            ViewData["AbilitiesId"] = new SelectList(response, "Id", "Id");
-            ViewData["InventoryId"] = new SelectList(response, "Id", "Id");
+            /*ViewData["AbilitiesId"] = new SelectList(response, "Id", "Id");
+            ViewData["InventoryId"] = new SelectList(response, "Id", "Id");*/
             ViewData["PartyId"] = new SelectList(response, "Id", "Id");
            
             var character = await _service.FindOne(id);
